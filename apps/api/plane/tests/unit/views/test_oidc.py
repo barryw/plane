@@ -5,7 +5,7 @@
 import hashlib
 import time
 from types import SimpleNamespace
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 from urllib.parse import parse_qs, urlsplit
 
 import jwt
@@ -29,7 +29,8 @@ METADATA = {
 
 
 @pytest.fixture(autouse=True)
-def oidc_env(monkeypatch):
+def oidc_env(monkeypatch, settings):
+    settings.WEB_URL = "https://plane.example.com"
     monkeypatch.setenv("OIDC_ISSUER_URL", ISSUER)
     monkeypatch.setenv("OIDC_CLIENT_ID", "plane")
     monkeypatch.setenv("OIDC_CLIENT_SECRET", "secret")
