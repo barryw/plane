@@ -1,0 +1,9 @@
+# Keep upstream runtime and dependencies; layer only the Community OIDC changes.
+FROM makeplane/plane-backend:v1.4.2@sha256:01a159fa9947ec6cd553d360fcfdac63743f2b1503e631ca7e3e5deeb7346cae
+LABEL org.opencontainers.image.source="https://github.com/barryw/plane"
+COPY plane/authentication/provider/oauth/oidc.py /code/plane/authentication/provider/oauth/oidc.py
+COPY plane/authentication/views/app/oidc.py /code/plane/authentication/views/app/oidc.py
+COPY plane/authentication/urls.py /code/plane/authentication/urls.py
+COPY plane/license/api/views/instance.py /code/plane/license/api/views/instance.py
+COPY plane/db/models/user.py /code/plane/db/models/user.py
+COPY plane/db/migrations/0123_account_oidc_provider.py /code/plane/db/migrations/0123_account_oidc_provider.py

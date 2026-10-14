@@ -145,6 +145,9 @@ export const AuthRoot = observer(function AuthRoot(props: TAuthRoot) {
         />
       )}
       <TermsAndConditions authType={authMode} />
+      <a className="text-center text-xs text-secondary" href="https://github.com/barryw/plane/tree/feat/authentik-oidc">
+        Source code
+      </a>
     </AuthContainer>
   );
 });

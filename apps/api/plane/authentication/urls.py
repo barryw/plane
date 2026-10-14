@@ -4,6 +4,8 @@
 
 from django.urls import path
 
+from .views.app.oidc import OIDCCallbackEndpoint, OIDCInitiateEndpoint
+
 from .views import (
     CSRFTokenEndpoint,
     ForgotPasswordEndpoint,
@@ -47,6 +49,8 @@ from .views import (
 )
 
 urlpatterns = [
+    path("oidc/", OIDCInitiateEndpoint.as_view(), name="oidc-initiate"),
+    path("oidc/callback/", OIDCCallbackEndpoint.as_view(), name="oidc-callback"),
     # credentials
     path("sign-in/", SignInAuthEndpoint.as_view(), name="sign-in"),
     path("sign-up/", SignUpAuthEndpoint.as_view(), name="sign-up"),

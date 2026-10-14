@@ -18,6 +18,7 @@ from plane.app.views import BaseAPIView
 from plane.db.models import Workspace
 from plane.license.api.permissions import InstanceAdminPermission
 from plane.license.api.serializers import InstanceSerializer
+from plane.authentication.provider.oauth.oidc import oidc_enabled
 from plane.license.models import Instance
 from plane.license.utils.instance_value import get_configuration_value
 from plane.utils.cache import cache_response, invalidate_cache
@@ -129,6 +130,8 @@ class InstanceEndpoint(BaseAPIView):
         # Authentication
         data["enable_signup"] = ENABLE_SIGNUP == "1"
         data["is_workspace_creation_disabled"] = DISABLE_WORKSPACE_CREATION == "1"
+        data["is_oidc_enabled"] = oidc_enabled()
+        data["oidc_display_name"] = os.environ.get("OIDC_DISPLAY_NAME", "Authentik")
         data["is_google_enabled"] = IS_GOOGLE_ENABLED == "1"
         data["is_github_enabled"] = IS_GITHUB_ENABLED == "1"
         data["is_gitlab_enabled"] = IS_GITLAB_ENABLED == "1"

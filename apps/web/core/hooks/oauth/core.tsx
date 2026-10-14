@@ -30,12 +30,23 @@ export const useCoreOAuthConfig = (oauthActionText: string): TOAuthConfigs => {
   // derived values
   const isOAuthEnabled =
     (config &&
-      (config?.is_google_enabled ||
+      (config?.is_oidc_enabled ||
+        config?.is_google_enabled ||
         config?.is_github_enabled ||
         config?.is_gitlab_enabled ||
         config?.is_gitea_enabled)) ||
     false;
   const oAuthOptions: TOAuthOption[] = [
+    {
+      id: "oidc",
+      text: `${oauthActionText} with ${config?.oidc_display_name || "Authentik"}`,
+      icon: <span aria-hidden="true">↗</span>,
+      onClick: () => {
+        const query = next_path ? `?${new URLSearchParams({ next_path })}` : "";
+        window.location.assign(`${API_BASE_URL}/auth/oidc/${query}`);
+      },
+      enabled: !!config?.is_oidc_enabled,
+    },
     {
       id: "google",
       text: `${oauthActionText} with Google`,
