@@ -10,7 +10,7 @@ permissions:
   packages: write
 
 env:
-  IMAGE_TAG: v1.4.2-authentik.1
+  IMAGE_TAG: v1.4.2-authentik.2
 
 jobs:
   backend:

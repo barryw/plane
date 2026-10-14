@@ -63,7 +63,7 @@ class OIDCCallbackEndpoint(View):
         if (
             not flow
             or not request.GET.get("state")
-            or not secrets.compare_digest(request.GET["state"], flow["state"])
+            or not secrets.compare_digest(request.GET["state"].encode(), flow["state"].encode())
             or not 0 <= time.time() - flow["started"] <= 600
             or request.GET.get("error")
             or not request.GET.get("code")

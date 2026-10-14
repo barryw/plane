@@ -141,7 +141,7 @@ def callback_request(query="state=state&code=code", **flow_changes):
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize("query,flow", [("code=code", {}), ("state=wrong&code=code", {}),
+@pytest.mark.parametrize("query,flow", [("code=code", {}), ("state=wrong&code=code", {}), ("state=%C3%A9&code=code", {}),
                                           ("state=state", {}), ("state=state&code=code&error=access_denied", {}),
                                           ("state=state&code=code", {"started": 1})])
 def test_callback_fails_closed_and_consumes_state(query, flow):
