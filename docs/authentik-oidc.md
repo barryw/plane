@@ -34,6 +34,9 @@ state (10-minute lifetime), nonce, signed RS256/ES256 ID tokens, exact issuer,
 audience/authorized party, expiry, and matching UserInfo subject. Subject links
 include the issuer and reject email/subject changes rather than reassigning an
 account. An administrator must resolve legitimate identity/email changes.
+Signing-key requests identify themselves as `Plane-OIDC/1.0`; some edge filters
+reject Python urllib's default User-Agent. The issuer must also serve a valid TLS
+certificate from inside the cluster, including when split DNS returns LAN IPs.
 
 Run tests:
 
