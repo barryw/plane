@@ -108,7 +108,9 @@ class OIDCProvider(OauthAdapter):
         id_token = tokens.get("id_token")
         if not isinstance(id_token, str) or not tokens.get("access_token"):
             raise oidc_error()
-        signing_key = jwt.PyJWKClient(self.jwks_uri, timeout=10).get_signing_key_from_jwt(id_token)
+        signing_key = jwt.PyJWKClient(
+            self.jwks_uri, headers={"User-Agent": "Plane-OIDC/1.0"}, timeout=10
+        ).get_signing_key_from_jwt(id_token)
         claims = jwt.decode(
             id_token,
             signing_key.key,

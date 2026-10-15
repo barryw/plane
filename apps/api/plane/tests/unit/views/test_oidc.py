@@ -3,9 +3,12 @@
 # See the LICENSE file for details.
 
 import hashlib
+import json
 import time
+from io import BytesIO
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
+from urllib.error import HTTPError
 from urllib.parse import parse_qs, urlsplit
 
 import jwt
@@ -199,3 +202,43 @@ def test_email_cannot_relink_to_another_subject(create_user):
     oidc.user_data = {"email": create_user.email}
     with pytest.raises(AuthenticationException):
         oidc.complete_login_or_signup()
+
+
+@pytest.mark.unit
+@pytest.mark.django_db
+def test_callback_establishes_session_when_idp_rejects_urllib_user_agent(client, create_user, signing_key):
+    """Exercise real JWT verification and session cookies through the callback."""
+    from plane.db.models import Profile
+
+    Profile.objects.get_or_create(user=create_user)
+    session = client.session
+    session["oidc_flow"] = {
+        "state": "state", "nonce": "nonce", "verifier": "verifier",
+        "started": time.time(), "next_path": "/workspace/",
+    }
+    session.save()
+    jwk = json.loads(jwt.algorithms.RSAAlgorithm.to_jwk(signing_key.public_key()))
+    jwk.update({"kid": "test", "use": "sig", "alg": "RS256"})
+
+    def http_json(method, url, **kwargs):
+        responses = {
+            ISSUER + ".well-known/openid-configuration": METADATA,
+            METADATA["token_endpoint"]: {"id_token": token(signing_key), "access_token": "access"},
+            METADATA["userinfo_endpoint"]: {
+                "sub": "user-1", "email": create_user.email, "email_verified": True,
+            },
+        }
+        return Mock(status_code=200, json=Mock(return_value=responses[url]))
+
+    def idp_jwks(request, **kwargs):
+        if request.get_header("User-agent") != "Plane-OIDC/1.0":
+            raise HTTPError(request.full_url, 403, "Forbidden", {}, None)
+        return BytesIO(json.dumps({"keys": [jwk]}).encode())
+
+    with patch("requests.request", side_effect=http_json), patch("urllib.request.urlopen", side_effect=idp_jwks):
+        response = client.get("/auth/oidc/callback/?state=state&code=code", HTTP_USER_AGENT="Plane OIDC regression")
+    assert response.status_code == 302
+    assert "error_code" not in response.url
+    assert client.session["_auth_user_id"] == str(create_user.pk)
+    assert Account.objects.filter(user=create_user, provider="oidc").exists()
+    assert client.get("/api/users/me/").status_code == 200
