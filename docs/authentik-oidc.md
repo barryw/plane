@@ -1,6 +1,6 @@
 # Authentik OIDC for Community Edition
 
-This fork adds native OIDC login to Plane Community Edition v1.4.2. It uses the
+This fork adds native OIDC login to Plane Community Edition v1.4.3. It uses the
 existing account, signup, invitation, deactivation and session workflows. No
 Commercial Edition code or license mechanism is involved.
 
@@ -47,6 +47,6 @@ docker compose -f docker-compose-test.yml run --rm --build api-tests \
 
 Build the backend with `apps/api/Dockerfile.oidc` (context `apps/api`) and the web
 with `apps/web/Dockerfile.web` (repository root). Other components use the matching
-upstream v1.4.2 images. Keep custom images versioned and update the fork when
+upstream v1.4.3 images. Keep custom images versioned and update the fork when
 upstream publishes fixes. A Source code link on the login page points to this
 public fork.
